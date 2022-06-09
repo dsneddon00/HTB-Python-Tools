@@ -4,8 +4,6 @@ from bs4 import BeautifulSoup
 
 PAGE_URL = "http://" + str(input("Input host IP and port ( <HOST>:<IP> ) -> "))
 
-resp = requests.get(PAGE_URL)
-
 
 def getHtmlOf(url):
     response = requests.get(url)
@@ -15,21 +13,29 @@ def getHtmlOf(url):
     else:
         return response.content.decode()
 
-dump = getHtmlOf(PAGE_URL)
-beautify = BeautifulSoup(dump, "html.parser")
-raw = beautify.get_text()
-total = re.findall(r'\w+', raw)
+def countOccurrencesIn(word_list):
+    word_count = {}
 
-wordCount = {}
+    for word in word_list:
+        if word not in word_count:
+            word_count[word] = 1
+        else:
+            current_count = word_count.get(word)
+            word_count[word] = current_count + 1
+    return word_count
 
-for word in total:
-    if(word not in wordCount):
-        wordCount[word] = 1
-    else:
-        cur = wordCount.get(word)
-        wordCount[word] = cur + 1
+def getAllWordsFrom(url):
+    html = getHtmlOf(url)
+    soup = BeautifulSoup(html, 'html.parser')
+    raw_text = soup.get_text()
+    return re.findall(r'\w+', raw_text)
 
-topWords = sorted(wordCount.items(), key=lambda item: item[1], reverse=True)
+def getTopWordsFrom(url):
+    all_words = getAllWordsFrom(url)
+    occurrences = countOccurrencesIn(all_words)
+    return sorted(occurrences.items(), key=lambda item: item[1], reverse=True) # lambda helps sorts the dictionary by values
 
-for i in range(10):
-    print(topWords[i][0])
+top_words = getTopWordsFrom(PAGE_URL)
+
+for i in range(20):
+    print(top_words[i][0])
