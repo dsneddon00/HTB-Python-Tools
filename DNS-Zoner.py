@@ -36,4 +36,17 @@ def AXFR(domain, nameserver):
 		pass
 
 if __name__ == "__main__":
-	pass	
+	
+	for nameserver in NS.nameservers:
+		# attempt to DNS Zone
+		AXFR(Domain, nameserver)
+
+	# display results
+	if Subdomains is not None:
+		print("--FOUND SUBDOMAINS--")
+		
+		for subdomain in Subdomains:
+			print("{}".format(subdomain))
+	else:
+		print("No subdomains found.")
+		exit()	
